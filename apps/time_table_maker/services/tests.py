@@ -1,4 +1,4 @@
-from apps.time_table_maker.services.time_table_service import time_table_maker
+from time_table_service import time_table_maker
 
 if __name__ == '__main__':
     # Test 1
@@ -10,15 +10,17 @@ if __name__ == '__main__':
     }
     
     courses = {
-        "C1": {"name": "ساختمان داده", "credits": 3, "cohort": "1403", "teachers": ["T1", "T2"]},
+        "C1": {"name": "ساختمان داده", "credits": 3, "cohort": "1403", "teachers": ["T1"]},
         "C2": {"name": "برنامه‌نویسی پیشرفته", "credits": 4, "cohort": "1404", "teachers": ["T2"]},
         "C3": {"name": "ریاضیات گسسته", "credits": 3, "cohort": "1404", "teachers": ["T1", "T3"]},
         "C4": {"name": "هوش مصنوعی", "credits": 2, "cohort": "1402", "teachers": ["T3"]},
-        "C5": {"name": "هوش مصنوعی", "credits": 3, "cohort": "1402", "teachers": ["T1", "T2"]},
+        "C5": {"name": "هوش مصنوعی", "credits": 3, "cohort": "1402", "teachers": ["T1"]},
         "C6": {"name": "آزمایشگاه فیزیک", "credits": 1, "cohort": "1405", "teachers": ["T3"]}
     }
+    cohorts = ["1402", "1403", "1404", "1405"]
+    days = ["Saturday", "Sunday", "Monday", "Tuesday", "Wednesday"]
     
-    time_table_maker(teachers=teachers, courses=courses, print_result=True)
+    time_table_maker(teachers=teachers, courses=courses, print_result=True, cohorts=cohorts, days=days)
     print("* Test 1 done.")
     
     # Test 2
@@ -82,7 +84,6 @@ if __name__ == '__main__':
         "C23_9":  {"name": "C23_Course_9", "cohort": "2023", "credits": 2, "teachers": ["T3"]},
         "C23_10": {"name": "C23_Course_10", "cohort": "2023", "credits": 1, "teachers": ["T4"]}
     }
-    
     time_table_maker(teachers=teachers, courses=courses, print_result=True)
     print("* Test 2 done.")
     

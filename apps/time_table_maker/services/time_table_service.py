@@ -1,10 +1,13 @@
 from ortools.sat.python import cp_model
+from dependencies import get_mongo_connection
+from datetime import datetime
 
-def time_table_maker( teachers:dict={}, courses:dict={}, number_of_rooms:int=3,
+
+def time_table_maker(teachers:dict={}, courses:dict={}, number_of_rooms:int=3,
                      cohorts:list=["2023", "2024", "2025", "2026"], 
                      days:list=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
                      hours:list=["8:00 AM", "10:00 AM", "14:00 PM", "16:00 PM"],
-                     print_result:bool=False) -> dict:
+                     print_result:bool=False, task_id:str='') -> dict:
     
     number_of_rooms = number_of_rooms
     cohorts = cohorts
@@ -167,12 +170,35 @@ def time_table_maker( teachers:dict={}, courses:dict={}, number_of_rooms:int=3,
                     
             print("-" * 40)
         
+        _save_results(cohort_schedules, task_id)
         return {"status": "success", 'data': cohort_schedules}
         
     else:
         if print_result:
             print("No feasible schedule could be found. Constraints might be too tight.")
-        return {"status": "infeasible", 'data': None}
-    
-    return cohort_schedules
+        
+        _save_results(None)
+        
+        return {"status": "infeasible", 'data': None} 
 
+
+def _save_results(cohort_schedules, task_id):
+    
+    DB_NAME = "university_scheduler"
+    COLLECTION_NAME = "schedules"      
+    
+    with get_mongo_connection() as client:
+        # If database and collection do not exist, they will be created on first insert.
+        db = client[DB_NAME]
+        collection = db[COLLECTION_NAME]
+        
+        document = {
+            "task_id": task_id,
+            "created_at": datetime.utcnow(),
+            "result": cohort_schedules
+        }
+        
+        # Insert the result into the collection
+        collection.insert_one(document)
+        print('* Document saved.')
+        

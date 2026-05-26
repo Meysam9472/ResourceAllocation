@@ -152,7 +152,7 @@ Authenticates the user and retrieves the `access_token` and `refresh_token`.
 
 ```bash
 curl -X 'POST' \
-  'http://localhost:8000/login' \
+  'http://localhost:8000/users/login' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/x-www-form-urlencoded' \
   -d 'username=admin_user&password=my_secure_password'

@@ -2,7 +2,7 @@ import enum
 from sqlalchemy import Column, Integer, String, Enum, ForeignKey
 from sqlalchemy.orm import relationship
 from database import Base
-
+from .time_table_models import Teacher, Course
 
 class UserRole(enum.Enum):
     SUPER_ADMIN = "super_admin"
@@ -19,5 +19,5 @@ class User(Base):
     role = Column(Enum(UserRole), default=UserRole.USER, nullable=False)
     
     teachers = relationship("Teacher", back_populates="user")
-    courses = relationship("Course", back_populates="users")
+    courses = relationship("Course", back_populates="user")
     

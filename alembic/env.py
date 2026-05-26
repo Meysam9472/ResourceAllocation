@@ -7,7 +7,9 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from alembic import context
 
 from database import DATABASE_URL
-from models import users_models, time_table_models
+# Load all models here to detect by sqlalchemy at first of running the project
+from models.users_models import User
+from models.time_table_models import Teacher, Course
 from database import Base
 
 # this is the Alembic Config object, which provides

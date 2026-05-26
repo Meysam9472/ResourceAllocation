@@ -136,7 +136,7 @@ These `curl` commands are for testing the `user management` and `authentication`
 Creates a new user with an ADMIN role.
 ```bash
 curl -X 'POST' \
-  'http://localhost:8000/users/' \
+  'http://localhost:8000/users/sing-up' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -173,7 +173,7 @@ Uses the `refresh_token` to get a new `access_token` when the original one expir
 
 ```bash
 curl -X 'POST' \
-  'http://localhost:8000/refresh' \
+  'http://localhost:8000/users/refresh' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{

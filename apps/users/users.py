@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Body
 from dependencies import get_postgres_db_connection as get_db
+
 from schemas.users_schema import UserCreate, UserResponse, RefreshTokenRequest
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
@@ -13,7 +14,9 @@ from jose import JWTError, jwt
 from .security import create_access_token, REFRESH_SECRET_KEY, ALGORITHM
 from .security import verify_password, create_refresh_token
 
-from dependencies import require_admin_role
+from models.users_models import UserRole
+
+from dependencies import require_admin_role, get_current_user_token_data
 from fastapi.security import OAuth2PasswordRequestForm
 
 
@@ -60,10 +63,19 @@ async def read_users(skip: int = 0, limit: int = 100, db: AsyncSession = Depends
 
 
 @router.get("/{user_id}", response_model=UserResponse)
-async def read_user(user_id: int, db: AsyncSession = Depends(get_db)):
+async def read_user(user_id: int, db: AsyncSession = Depends(get_db), 
+                    current_user: int=Depends(get_current_user_token_data)):
     """
     Get a specific user by ID.
     """
+    current_user_role = current_user.get("role")
+    current_user_id = current_user.get("user_id")
+    
+    if current_user_role not in [UserRole.ADMIN.name, UserRole.SUPER_ADMIN.name]:
+        if user_id != current_user_id:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
+                                detail="You are not allowed to perform this action.")
+    
     result = await db.execute(select(User).where(User.id == user_id))
     user = result.scalars().first()
     if not user:

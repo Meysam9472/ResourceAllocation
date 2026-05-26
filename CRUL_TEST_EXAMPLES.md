@@ -1,6 +1,9 @@
 # API Testing Guide
 
-This document contains `curl` commands to test the FastAPI scheduling endpoints. Ensure your FastAPI server, Redis, and Celery workers are running before executing these tests.
+This document contains `curl` commands to test this project endpoints. Ensure your **FastAPI server**, **MongoDB**, **Postgresql**, **Redis**, and **Celery workers** are running before executing these tests.
+
+## API Tests for Scheduling Task
+These `curl` commands are for testing the `scheduling` endpoints.
 
 ### 1. Start the Scheduling Task
 
@@ -125,47 +128,65 @@ json
 ```
 
 
-## User Management API Tests
+## API Tests for User Management and Authentication
 
-These `curl` commands are used to test the user management endpoints. 
-Assuming the FastAPI server is running locally on `http://127.0.0.1:8000`.
+These `curl` commands are for testing the `user management` and `authentication` endpoints.
 
-### 1. Create a New User
-Create a user with a specific role (e.g., ADMIN).
+### 1. Create a New User (Admin)
+Creates a new user with an ADMIN role.
 ```bash
 curl -X 'POST' \
-  'http://127.0.0.1:8000/users/' \
+  'http://localhost:8000/users/' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
   -d '{
   "username": "admin_user",
-  "password": "mysecretpassword",
-  "role": "ADMIN"
+  "password": "my_secure_password",
+  "role": "admin"
 }'
 ```
 
-### 2. Get All Users
-Retrieve a list of all registered users (passwords will not be included in the response).
+### 2. Login (Get Access & Refresh Tokens)
+Authenticates the user and retrieves the `access_token` and `refresh_token`.
+**Note:** Copy the `access_token` and `refresh_token` from the response for the next steps.
+
+```bash
+curl -X 'POST' \
+  'http://localhost:8000/login' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/x-www-form-urlencoded' \
+  -d 'username=admin_user&password=my_secure_password'
+```
+
+### 3. Get All Users (Protected Endpoint)
+Requires a valid `access_token` with ADMIN role. Replace `<YOUR_ACCESS_TOKEN>` with the token received from the login step.
 
 ```bash
 curl -X 'GET' \
-  'http://127.0.0.1:8000/users/' \
-  -H 'accept: application/json'
+  'http://localhost:8000/users/' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>'
 ```
-### 3. Get a Specific User by ID
-Retrieve details of a single user (replace `1` with the actual user ID).
+
+### 4. Refresh Token
+Uses the `refresh_token` to get a new `access_token` when the original one expires. Replace `<YOUR_REFRESH_TOKEN>` with the refresh token from the login response.
 
 ```bash
-curl -X 'GET' \
-  'http://127.0.0.1:8000/users/1' \
-  -H 'accept: application/json'
+curl -X 'POST' \
+  'http://localhost:8000/refresh' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '{
+  "refresh_token": "<YOUR_REFRESH_TOKEN>"
+}'
 ```
 
-### 4. Delete a User
-Delete a specific user by their ID (replace `1` with the actual user ID).
+### 5. Delete a User (Protected Endpoint)
+Deletes a user by ID. Requires a valid `access_token` with ADMIN role. Replace `1` with the actual user ID and provide your token.
 
 ```bash
 curl -X 'DELETE' \
-  'http://127.0.0.1:8000/users/1' \
-  -H 'accept: */*'
+  'http://localhost:8000/users/1' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>'
 ```

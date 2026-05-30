@@ -13,6 +13,7 @@ curl -X 'POST' \
   'http://localhost:8000/schedule/start' \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <YOUR_ACCESS_TOKEN> \
   -d '{
   "teachers": {
         "T1": {"name": "Prof. A","teacher_available_times":[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]},                                           
@@ -95,7 +96,8 @@ Use the `task_id` received from the previous request to check the status of your
 ```bash
 curl -X 'GET' \
   'http://localhost:8000/schedule/status/YOUR_TASK_ID' \
-  -H 'accept: application/json'
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <YOUR_ACCESS_TOKEN> \
 ```
 **Example:**
 

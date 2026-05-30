@@ -29,7 +29,7 @@ It features a dual-database architecture: PostgreSQL for relational data (Users,
 
 ## 📁 Project Structure
 
-\`\`\`text
+```text
 ├── alembic/                # Database migration scripts
 ├── core/
 │   ├── security.py         # JWT and password hashing (Argon2)
@@ -47,7 +47,7 @@ It features a dual-database architecture: PostgreSQL for relational data (Users,
 ├── main.py                 # FastAPI application entry point
 ├── alembic.ini             # Alembic configuration
 └── requirements.txt        # Python dependencies
-\`\`\`
+```
 
 ## ⚙️ Prerequisites
 
@@ -59,43 +59,43 @@ It features a dual-database architecture: PostgreSQL for relational data (Users,
 ## 🚀 Installation & Setup
 
 1. **Clone the repository:**
-   \`\`\`bash
+   ```bash
    git clone https://github.com/yourusername/university-timetable-scheduler.git
    cd university-timetable-scheduler
-   \`\`\`
+   ```
 
 2. **Create and activate a virtual environment:**
-   \`\`\`bash
+   ```
    python -m venv venv
    source venv/bin/activate  # On Windows: venv\Scripts\activate
-   \`\`\`
+   ```
 
 3. **Install dependencies:**
-   \`\`\`bash
+   ```bash
    pip install -r requirements.txt
-   \`\`\`
+   ```
 
 4. **Database Setup:**
    Ensure PostgreSQL, MongoDB, and Redis are running. Update your connection strings in the code or `.env` file accordingly.
 
 5. **Run Migrations (PostgreSQL):**
-   \`\`\`bash
+   ```bash
    alembic upgrade head
-   \`\`\`
+   ```
 
 ## 🏃‍♂️ Running the Application
 
 You need to run three separate processes for the application to work fully:
 
 1. **Start the FastAPI server:**
-   \`\`\`bash
+   ```bash
    uvicorn main:app --reload
-   \`\`\`
+   ```
 
 2. **Start the Celery worker (Linux/macOS):**
-   \`\`\`bash
+   ```bash
    celery -A celery_worker.celery_app worker --loglevel=info
-   \`\`\`
+   ```
    *(Note for Windows users: Use `celery -A celery_worker.celery_app worker --loglevel=info -P solo`)*
 
 ## 📡 Key API Endpoints

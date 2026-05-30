@@ -13,8 +13,13 @@ router = APIRouter(prefix="/schedule", tags=["Schedule"])
 
 @router.post("/start")
 def start_scheduling(req: ScheduleRequest, current_user: int=Depends(get_current_user_token_data)):
+    
+    current_user_id = current_user.get("user_id")
+    
+    # TODO: Check Credit of user here
+    
     task = time_table_maker_task.delay(req.teachers, req.courses, req.num_rooms,
-                                       req.cohorts, req.days, req.hours)
+                                       req.cohorts, req.days, req.hours, current_user_id)
     return {"task_id": task.id, "message": "Task started in background."}
 
 

@@ -18,6 +18,9 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     role = Column(Enum(UserRole), default=UserRole.USER, nullable=False)
     
+    credit = Column(Integer, default=0)
+    phone_number = Column(String, nullable=False, unique=True)
+    
     teachers = relationship("Teacher", back_populates="user")
     courses = relationship("Course", back_populates="user")
     

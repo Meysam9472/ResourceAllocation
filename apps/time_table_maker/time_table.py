@@ -20,7 +20,7 @@ router = APIRouter(prefix="/schedule", tags=["Schedule"])
 
 
 @router.post("/start")
-async def start_scheduling(req: ScheduleRequest, current_user: int=Depends(get_current_user_token_data),
+async def start_scheduling(req: ScheduleRequest, current_user: dict=Depends(get_current_user_token_data),
                            db: AsyncSession = Depends(get_db)):
     
     current_user_id = current_user.get("user_id")
@@ -52,7 +52,7 @@ def get_schedule_status(task_id: str, current_admin: dict = Depends(require_admi
 
 
 @router.post("/add_teacher")
-async def add_teacher(req: TeacherRequest, current_user: int=Depends(get_current_user_token_data),
+async def add_teacher(req: TeacherRequest, current_user: dict=Depends(get_current_user_token_data),
                       db: AsyncSession = Depends(get_db)):
     try:
         user_id = current_user.get("user_id")
@@ -84,7 +84,7 @@ async def add_teacher(req: TeacherRequest, current_user: int=Depends(get_current
     
 
 @router.get("/get_teachers")
-async def get_teachers(current_user: int=Depends(get_current_user_token_data),
+async def get_teachers(current_user: dict=Depends(get_current_user_token_data),
                        db: AsyncSession = Depends(get_db)):
     try:
         user_id = current_user.get("user_id")
@@ -100,8 +100,8 @@ async def get_teachers(current_user: int=Depends(get_current_user_token_data),
         )
 
 
-@router.delete("/delete_teachers")
-async def delete_teachers(id: int, current_user: int=Depends(get_current_user_token_data),
+@router.delete("/delete_teachers/{id}")
+async def delete_teachers(id: int, current_user: dict=Depends(get_current_user_token_data),
                           db: AsyncSession = Depends(get_db)):
     # 1. Extract user_id from token data
     user_id = current_user.get("user_id")
@@ -138,8 +138,110 @@ async def delete_teachers(id: int, current_user: int=Depends(get_current_user_to
         )
 
 
-@router.delete("/delete_courses")
-async def delete_courses(id: int, current_user: int=Depends(get_current_user_token_data),
+@router.patch("/update_teacher/{id}") # Put ID in the URL path
+async def update_teacher(
+    id: int, 
+    teacher_data: TeacherUpdateSchema, # Use Pydantic schema for request body
+    current_user: dict = Depends(get_current_user_token_data),
+    db: AsyncSession = Depends(get_db)
+):
+    user_id = current_user.get("user_id")
+    
+    try:
+        teacher = await db.get(Teacher, id)
+        
+        # 1. Check if teacher exists FIRST to prevent AttributeError
+        if not teacher:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Teacher with id {id} not found"
+            )
+            
+        # 2. Check ownership (403 Forbidden is more semantically correct here)
+        if teacher.user_id != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You don't have permission to update this teacher"
+            )
+            
+        # 3. Update fields if they are provided (not None)
+        if teacher_data.first_name is not None:
+            teacher.first_name = teacher_data.first_name
+        if teacher_data.last_name is not None:
+            teacher.last_name = teacher_data.last_name
+        if teacher_data.available_times is not None:
+            teacher.available_times = teacher_data.available_times
+        
+        await db.commit()
+        await db.refresh(teacher) # Refresh to get updated data
+        
+        return teacher
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions so they don't get caught by the general Exception block
+        raise
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred while updating the teacher"
+        )
+
+
+@router.patch("/update_course/{id}") # Put ID in the URL path
+async def update_course(
+    id: int, 
+    course_data: CourseUpdateSchema, # Use Pydantic schema for request body
+    current_user: dict = Depends(get_current_user_token_data),
+    db: AsyncSession = Depends(get_db)
+):
+    
+    user_id = current_user.get("user_id")
+    
+    try:
+        course = await db.get(Course, id)
+        
+        # 1. Check if course exists FIRST to prevent AttributeError
+        if not course:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"Course with id {id} not found"
+            )
+            
+        # 2. Check ownership (403 Forbidden is more semantically correct here)
+        if course.user_id != user_id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You don't have permission to update this course"
+            )
+            
+        # 3. Update fields if they are provided (not None)
+        if course_data.name is not None:
+            course.name = course_data.name
+        if course_data.last_name is not None:
+            course.credits = course_data.credits
+        if course_data.available_times is not None:
+            course.cohort = course_data.cohort
+        
+        await db.commit()
+        await db.refresh(course) # Refresh to get updated data
+        
+        return course
+        
+    except HTTPException:
+        # Re-raise HTTP exceptions so they don't get caught by the general Exception block
+        raise
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred while updating the course"
+        )
+
+
+
+@router.delete("/delete_courses/{id}")
+async def delete_courses(id: int, current_user: dict=Depends(get_current_user_token_data),
                          db: AsyncSession = Depends(get_db)):
     user_id = current_user.get("user_id")
     try:
@@ -168,7 +270,7 @@ async def delete_courses(id: int, current_user: int=Depends(get_current_user_tok
     
 
 @router.get("/get_courses")
-async def get_courses(current_user: int=Depends(get_current_user_token_data), 
+async def get_courses(current_user: dict=Depends(get_current_user_token_data), 
                       db: AsyncSession = Depends(get_db)):
     try:
         user_id = current_user.get("user_id")
@@ -185,7 +287,7 @@ async def get_courses(current_user: int=Depends(get_current_user_token_data),
 
 
 @router.post("/add_course")
-async def add_course(req: CourseRequest, current_user: int=Depends(get_current_user_token_data),
+async def add_course(req: CourseRequest, current_user: dict=Depends(get_current_user_token_data),
                      db: AsyncSession = Depends(get_db)):
     try:
         user_id = current_user.get("user_id")

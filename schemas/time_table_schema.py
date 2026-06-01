@@ -1,13 +1,14 @@
 from pydantic import BaseModel
-from typing import List
+from typing import Optional, List, Dict
+
 
 class ScheduleRequest(BaseModel):
-    teachers: dict
-    courses: dict
+    teachers: Dict
+    courses: Dict
     num_rooms: int
-    cohorts: list
-    days: list
-    hours: list
+    cohorts: List
+    days: List
+    hours: List
 
 
 class TeacherRequest(BaseModel):
@@ -20,3 +21,15 @@ class CourseRequest(BaseModel):
     name: str
     credits: int
     cohort: str
+
+
+class TeacherUpdateSchema(BaseModel):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    available_times: Optional[List[int]] = None
+
+
+class CourseUpdateSchema(BaseModel):
+    name: Optional[str] = None
+    credits: Optional[int] = None
+    cohort: Optional[str] = None

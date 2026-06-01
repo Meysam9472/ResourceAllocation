@@ -218,10 +218,10 @@ curl -X GET "http://localhost:8000/schedule/get_teachers" \
      -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>"
 ```
 
-### 3. Delete a teacher by ID (e.g., id=1 passed as a query parameter)
+### 3. Delete a teacher by ID (e.g., id=1 passed as a path parameter)
 The `teacher id` should belongs to the user who requests to this api endpoint.
 ```bash
-curl -X DELETE "http://localhost:8000/schedule/delete_teachers?id=1" \
+curl -X DELETE "http://localhost:8000/schedule/delete_teachers/1" \
      -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>"
 ```
 
@@ -245,10 +245,35 @@ curl -X GET "http://localhost:8000/schedule/get_courses" \
      -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>"
 ```
 
-### 6. Delete a course by ID (e.g., id=1 passed as a query parameter)
+### 6. Delete a course by ID (e.g., id=1 passed as a path parameter)
 The `course id` should belongs to the user who requests to this api endpoint.
 
 ```bash
-curl -X DELETE "http://localhost:8000/schedule/delete_courses?id=1" \
+curl -X DELETE "http://localhost:8000/schedule/delete_courses/2" \
      -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>"
+```
+
+### 7. Update a teacher by ID (e.g., id=1 passed as a path parameter)
+The `teacher id` should belongs to the user who requests to this api endpoint.
+```bash
+curl -X PATCH "http://127.0.0.1:8000/schedule/update_teacher/2" \
+     -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "first_name": "Jax",
+          #  "available_times": ["Monday 10:00", "Tuesday 14:00"]
+         }'
+```
+
+### 8. Update a course by ID (e.g., id=1 passed as a path parameter)
+The `course id` should belongs to the user who requests to this api endpoint.
+```bash
+curl -X PATCH "http://127.0.0.1:8000/schedule/update_course/2" \
+     -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>" \
+     -H "Content-Type: application/json" \
+     -d '{
+            # "name": "Bank Management IV",
+            "credits": 4,
+            # "cohort": "2027"
+         }'
 ```

@@ -104,7 +104,8 @@ curl -X 'GET' \
 ```bash
 curl -X 'GET' \
   'http://localhost:8000/schedule/status/b9e6c4f0-7b5a-4b9e-9b0a-1c2d3e4f5a6b' \
-  -H 'accept: application/json'
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <YOUR_ACCESS_TOKEN> \
 ```
 
 **Expected Response (if completed successfully):**
@@ -191,4 +192,63 @@ curl -X 'DELETE' \
   'http://localhost:8000/users/1' \
   -H 'accept: application/json' \
   -H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>'
+```
+
+## API Tests for Data Management
+
+These `curl` commands are for testing the `data management` endpoints(like adding teachers, courses,...).
+
+### 1. Add a new teacher
+Create a new teacher for the current user.
+```bash
+curl -X POST "http://localhost:8000/schedule/add_teacher" \
+     -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "first_name": "Joe",
+           "last_name": "Dalton",
+           "available_times": [0, 1, 2, 3, 4]
+         }'
+```
+
+### 2. Retrieve all teachers
+Get all teachers for the current user.
+```bash
+curl -X GET "http://localhost:8000/schedule/get_teachers" \
+     -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>"
+```
+
+### 3. Delete a teacher by ID (e.g., id=1 passed as a query parameter)
+The `teacher id` should belongs to the user who requests to this api endpoint.
+```bash
+curl -X DELETE "http://localhost:8000/schedule/delete_teachers?id=1" \
+     -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>"
+```
+
+### 4. Add a new course
+Create a new course for the current user.
+```bash
+curl -X POST "http://localhost:8000/schedule/add_course" \
+     -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>" \
+     -H "Content-Type: application/json" \
+     -d '{
+           "name": "Bank Management I",
+           "credits": 3,
+           "cohort": "2026"
+         }'
+```
+
+### 5. Retrieve all courses
+Get all teachers for the current user.
+``` bash
+curl -X GET "http://localhost:8000/schedule/get_courses" \
+     -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>"
+```
+
+### 6. Delete a course by ID (e.g., id=1 passed as a query parameter)
+The `course id` should belongs to the user who requests to this api endpoint.
+
+```bash
+curl -X DELETE "http://localhost:8000/schedule/delete_courses?id=1" \
+     -H "Authorization: Bearer <YOUR_ACCESS_TOKEN>"
 ```

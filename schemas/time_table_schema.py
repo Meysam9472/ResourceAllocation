@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from typing import List
 
 class ScheduleRequest(BaseModel):
     teachers: dict
@@ -8,3 +8,15 @@ class ScheduleRequest(BaseModel):
     cohorts: list
     days: list
     hours: list
+
+
+class TeacherRequest(BaseModel):
+    first_name: str
+    last_name: str
+    available_times: List
+
+
+class CourseRequest(BaseModel):
+    name: str
+    credits: int
+    cohort: str

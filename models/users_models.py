@@ -23,4 +23,5 @@ class User(Base):
     
     teachers = relationship("Teacher", back_populates="user")
     courses = relationship("Course", back_populates="user")
+    user_teacher_course_relations = relationship("UserTeacherCourseRelation", back_populates="user")
     

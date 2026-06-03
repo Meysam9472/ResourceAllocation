@@ -9,6 +9,7 @@ class ScheduleRequest(BaseModel):
     cohorts: List
     days: List
     hours: List
+    schedule_name: str
 
 
 class TeacherRequest(BaseModel):

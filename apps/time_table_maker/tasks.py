@@ -7,7 +7,8 @@ logger = get_task_logger(__name__)
 
 
 @celery_app.task(bind=True, max_retries=5)
-def time_table_maker_task(self, teachers_data, courses_data, num_rooms, cohorts, days, hours, user_id):
+def time_table_maker_task(self, teachers_data, courses_data, num_rooms, cohorts, days, hours, 
+                          user_id, schedule_name):
     result = time_table_maker(teachers_data, courses_data, num_rooms, cohorts, days, hours, 
-                              False, self.request.id, user_id, logger)
+                              False, self.request.id, user_id, logger, schedule_name)
     return result

@@ -32,7 +32,7 @@ async def start_scheduling(req: ScheduleRequest, current_user: dict=Depends(get_
         raise HTTPException(status_code=400, detail="User's credit is not enough...")
     
     task = time_table_maker_task.delay(req.teachers, req.courses, req.num_rooms,
-                                       req.cohorts, req.days, req.hours, current_user_id)
+                                       req.cohorts, req.days, req.hours, current_user_id, req.schedule_name)
     return {"task_id": task.id, "message": "Task started in background."}
 
 

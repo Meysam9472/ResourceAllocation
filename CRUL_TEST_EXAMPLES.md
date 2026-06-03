@@ -73,7 +73,8 @@ curl -X 'POST' \
   "num_rooms": 3,
   "cohorts": ["2023", "2024", "2025", "2026"],
   "days": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-  "hours": ["8:00 AM", "10:00 AM", "14:00 PM", "16:00 PM"]
+  "hours": ["8:00 AM", "10:00 AM", "14:00 PM", "16:00 PM"],
+  "schedule_name": "schedule_1"
 }'
 ```
 

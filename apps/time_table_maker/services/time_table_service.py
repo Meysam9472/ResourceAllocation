@@ -12,7 +12,8 @@ def time_table_maker(teachers:dict={}, courses:dict={}, number_of_rooms:int=3,
                      cohorts:list=["2023", "2024", "2025", "2026"], 
                      days:list=["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
                      hours:list=["8:00 AM", "10:00 AM", "14:00 PM", "16:00 PM"],
-                     print_result:bool=False, task_id:str='', user_id=None, logger=None) -> dict:
+                     print_result:bool=False, task_id:str='', user_id=None, logger=None,
+                     schedule_name=None) -> dict:
     try:
         logger.info("Task started...")
         _credit_reduction(user_id)
@@ -178,14 +179,14 @@ def time_table_maker(teachers:dict={}, courses:dict={}, number_of_rooms:int=3,
                         
                 print("-" * 40)
             
-            _save_results(cohort_schedules, task_id, 'Success', user_id, logger)
+            _save_results(cohort_schedules, task_id, 'Success', user_id, logger, schedule_name)
             return {"status": "success", 'data': cohort_schedules}
             
         else:
             if print_result:
                 print("No feasible schedule could be found. Constraints might be too tight.")
             
-            _save_results(None, task_id, 'Infeasible', user_id, logger)
+            _save_results(None, task_id, 'Infeasible', user_id, logger, schedule_name)
             
             return {"status": "infeasible", 'data': None}
     
@@ -196,10 +197,10 @@ def time_table_maker(teachers:dict={}, courses:dict={}, number_of_rooms:int=3,
         error_result = {"Error Type": str(exc_type.__name__), "File Name": str(fname),
                         "Line Number": int(line_no), "Message": str(exc_obj)}
         
-        _save_results(error_result, task_id, 'Error', user_id, logger)
+        _save_results(error_result, task_id, 'Error', user_id, logger, schedule_name)
 
 
-def _save_results(cohort_schedules, task_id, status, user_id, logger):
+def _save_results(cohort_schedules, task_id, status, user_id, logger, schedule_name):
     
     DB_NAME = "university_scheduler"
     COLLECTION_NAME = "schedules"      
@@ -214,6 +215,7 @@ def _save_results(cohort_schedules, task_id, status, user_id, logger):
         collection = db[COLLECTION_NAME]
         
         document = {
+            "schedule_name": schedule_name,
             "user_id": user_id,
             "task_id": task_id,
             "created_at": datetime.utcnow(),

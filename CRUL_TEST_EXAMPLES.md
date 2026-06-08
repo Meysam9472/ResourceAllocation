@@ -195,6 +195,32 @@ curl -X 'DELETE' \
   -H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>'
 ```
 
+### 6. Change credit for a User (Protected Endpoint)
+Adding or decreasing credit for a user by ID(`amount` value could be negative). Requires a valid `access_token` with ADMIN role.
+
+```bash
+curl -X 'POST' \
+  'http://localhost:8000/users/change_user_credit' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>' \
+  -d '{
+  "user_id": 4,
+  "amount": 3
+}'
+
+```
+
+### 7. Get credit of a User (Protected Endpoint)
+Returns credit of a user by ID. Requires a valid `access_token` with ADMIN role. Replace `1` with the actual user ID.
+
+```bash
+curl -X 'GET' \
+  'http://localhost:8000/users/get_user_credit/1' \
+  -H 'accept: application/json' \
+  -H 'Authorization: Bearer <YOUR_ACCESS_TOKEN>'
+```
+
 ## API Tests for Data Management
 
 These `curl` commands are for testing the `data management` endpoints(like adding teachers, courses,...).

@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status, Body
 from dependencies import get_postgres_db_connection as get_db
 
-from schemas.users_schema import UserCreate, UserResponse, RefreshTokenRequest
+from schemas.users_schema import UserCreate, UserResponse, RefreshTokenRequest, AddCreditRequest
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 from typing import List
@@ -170,3 +170,73 @@ async def refresh_access_token(request_data: RefreshTokenRequest):
     except JWTError:
         # If the refresh token is expired or invalid, the user MUST log in again
         raise credentials_exception
+
+
+@router.post("/change_user_credit", status_code=status.HTTP_200_OK)
+async def change_user_credit(req: AddCreditRequest, db: AsyncSession = Depends(get_db),
+                    current_admin: dict = Depends(require_admin_role)):
+    """
+    Add credit for a user. value can be negative for decreasing user's credite.
+    """
+    try:
+        user_data = await db.get(User, req.user_id)
+        
+        if not user_data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User with id {req.user_id} not found"
+            ) 
+
+        new_amount = user_data.credit + req.amount
+        if new_amount < 0:
+                raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Credit amount must be at least 0. The new amount will make credit lower than 0."
+            )
+
+        user_data.credit = new_amount
+        
+        await db.commit()
+        await db.refresh(user_data)
+        
+        return {
+            "status": "success",
+            "user_id": user_data.id,
+            "new_credit": user_data.credit
+        }
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred while updating the user."
+        )
+
+
+@router.get("/get_user_credit/{user_id}", status_code=status.HTTP_200_OK)
+async def get_user_credit(user_id: int, db: AsyncSession = Depends(get_db),
+                          current_admin: dict = Depends(require_admin_role)):
+    """
+    Get credit of a user by id.
+    """
+    try:
+        user_data = await db.get(User, user_id)
+        
+        if not user_data:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail=f"User with id {user_id} not found"
+            ) 
+        
+        return {"message": f"Credit is {user_data.credit} for user with id={user_data.id}."}
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        await db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="An unexpected error occurred while getting the user."
+        )

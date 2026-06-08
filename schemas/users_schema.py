@@ -20,3 +20,8 @@ class UserResponse(BaseModel):
 
 class RefreshTokenRequest(BaseModel):
     refresh_token: str
+
+
+class AddCreditRequest(BaseModel):
+    user_id: int
+    amount: int

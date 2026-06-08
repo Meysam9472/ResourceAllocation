@@ -6,7 +6,7 @@ authors = [
     {name = "Meysam9472",email = "meysammehmannavaz94@gmail.com"}
 ]
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<4.0"
 dependencies = [
     "fastapi (>=0.136.1,<0.137.0)",
     "ortools (>=9.15.6755,<10.0.0)",
@@ -22,7 +22,8 @@ dependencies = [
     "python-dotenv (>=1.2.2,<2.0.0)",
     "python-jose[cryptography] (>=3.5.0,<4.0.0)",
     "python-multipart (>=0.0.29,<0.0.30)",
-    "psycopg2 (>=2.9.12,<3.0.0)"
+    "psycopg2 (>=2.9.12,<3.0.0)",
+    "slowapi (>=0.1.9,<0.2.0)"
 ]
 package-mode = false
 

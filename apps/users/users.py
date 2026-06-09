@@ -71,7 +71,7 @@ async def reset_user_password(
         current_user_id = int(current_user.get("user_id"))
         
         # 2. Check Permissions
-        is_admin = current_user_role in [UserRole.ADMIN.value, UserRole.SUPER_ADMIN.value]
+        is_admin = current_user_role in [UserRole.ADMIN.name, UserRole.SUPER_ADMIN.name]
         is_owner = user_data.id == current_user_id
 
         if not is_admin and not is_owner:
